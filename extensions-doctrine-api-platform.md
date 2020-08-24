@@ -107,27 +107,23 @@ final class OldCompositionExtension implements QueryCollectionExtensionInterface
         $user = $this->tokenStorage->getToken()->getUser();
  
         // Add the where clause if we're operating on a Composition resource, and the user is not an admin.
-        if ($user instanceof User && Composition::class === $resourceClass && count(compositionList) >= 5) {
+        if ($user instanceof User && Composition::class === $resourceClass && count($compositionList) >= 5) {
             $rootAlias = $queryBuilder->getRootAliases()[0];
-            $5firtsCompositions = [];
+            $lastCompositionList = [];
             for ($i = 0; $i <= 5; $i++) {
-                array_push($5firtsCompositions[i]);
-                return $5firtsCompositions;
+                array_push($lastCompositionList, $compositionList[i]);
+                return $lastCompositionList;
             }
-            $queryBuilder->andWhere(sprintf('%s.$5firtsCompositions', $rootAlias));
+            $queryBuilder->andWhere(sprintf('%s.$lastCompositionList', $rootAlias));
         }
     }
 }
 ```
-2. Nous ajoutons de l'auto-configuration pour automatiser le lien entre le service et les entités :
+2. L'auto-configuration est active car dans le fichier service, nous avons la ligne suivante :
 ```yaml
 # api/config/services.yaml
 services:
-
-    # ...
-
-    'App\Doctrine\CurrentUserExtension':
-        tags:
-            - { name: api_platform.doctrine.orm.query_extension.collection }
-            - { name: api_platform.doctrine.orm.query_extension.item }
+    _defaults:
+...
+        autoconfigure: true # Automatically registers your services as commands, event subscribers, etc.
 ```
